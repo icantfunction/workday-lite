@@ -301,10 +301,43 @@ p {
 
 .status-group {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.status-badges {
+  display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.magic-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.magic-form input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font: inherit;
+  min-width: 220px;
+}
+
+.magic-form input:focus {
+  outline: none;
+  border-color: rgba(43, 110, 246, 0.8);
+  box-shadow: 0 0 0 3px rgba(43, 110, 246, 0.12);
+}
+
+.magic-form .pill {
+  margin-left: 4px;
 }
 
 .step-label {
@@ -509,6 +542,12 @@ select:focus {
   color: #ffffff;
 }
 
+.btn.tiny {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: default;
@@ -560,6 +599,12 @@ select:focus {
   background: #ffffff;
 }
 
+.pill.success {
+  border-color: rgba(47, 157, 99, 0.35);
+  color: #1f7c53;
+  background: rgba(47, 157, 99, 0.1);
+}
+
 .pill.error {
   border-color: rgba(217, 72, 85, 0.45);
   color: #b42334;
@@ -571,6 +616,23 @@ select:focus {
   font-size: 12px;
   color: var(--accent);
   word-break: break-all;
+}
+
+.banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px dashed var(--border-strong);
+  background: #fdfefe;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px 0 12px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.04);
+}
+
+.banner.visible {
+  display: block;
 }
 
 .muted {
@@ -649,6 +711,13 @@ select:focus {
   .app-footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .status-group,
+  .status-badges,
+  .magic-form {
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   .two-col {

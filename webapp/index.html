@@ -11,7 +11,14 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
-    <script defer src="app.js"></script>
+    <script src="./vendor/jszip.min.js"></script>
+    <script src="./vendor/pdf.min.js"></script>
+    <script>
+      if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = './vendor/pdf.worker.min.js';
+      }
+    </script>
+    <script type="module" src="js/main.js"></script>
   </head>
   <body>
     <div class="bg">
@@ -111,10 +118,27 @@
               <p id="step-label" class="step-label">Loading...</p>
             </div>
             <div class="status-group">
-              <span id="status-text" class="pill live small">Initializing...</span>
-              <span id="error-text" class="pill error"></span>
+              <form id="magic-form" class="magic-form">
+                <input id="magic-email" type="email" placeholder="Email for magic link" aria-label="Email" />
+                <button class="btn ghost tiny" type="submit">Send link</button>
+                <span id="magic-status" class="pill neutral small hidden"></span>
+              </form>
+              <div class="status-badges">
+                <span id="status-text" class="pill live small">Initializing...</span>
+                <span id="queue-pill" class="pill outline hidden"></span>
+                <span id="error-text" class="pill error"></span>
+              </div>
             </div>
           </header>
+
+          <div id="offline-banner" class="banner">
+            <div>
+              <p class="tiny-label">Offline mode</p>
+              <p class="muted small">
+                We saved your draft locally. Sync will resume automatically when you are back online.
+              </p>
+            </div>
+          </div>
 
           <div class="progress">
             <div id="progress-bar"></div>
@@ -147,6 +171,16 @@
             </label>
             <input id="resume-input" class="sr-only" type="file" accept=".pdf,.doc,.docx" />
             <p id="resume-info" class="info"></p>
+            <div id="pending-resume" class="banner">
+              <div>
+                <p class="tiny-label">Resume pending upload</p>
+                <p class="muted small">
+                  We saved <strong id="pending-resume-name">your file</strong> locally. Select it again when you are online to
+                  finish the upload.
+                </p>
+              </div>
+              <button id="resume-retry-btn" class="btn ghost tiny">Select file</button>
+            </div>
           </section>
 
           <section id="step-questions" class="step">
