@@ -2,105 +2,254 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Job Application</title>
+    <title>Daylight Application Workspace</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
     <script defer src="app.js"></script>
   </head>
   <body>
-    <main class="app">
-      <header class="app-header">
-        <div>
-          <h1>Job Application</h1>
-          <p id="step-label" class="muted">Loading…</p>
+    <div class="bg">
+      <span class="glow glow-a"></span>
+      <span class="glow glow-b"></span>
+      <span class="grid"></span>
+    </div>
+
+    <div class="page">
+      <header class="topline">
+        <div class="brand">
+          <div class="brand-mark">
+            <span class="spark"></span>
+            <span class="spark"></span>
+          </div>
+          <div>
+            <p class="eyebrow">Beacon Hiring OS</p>
+            <p class="brand-name">Candidate studio</p>
+          </div>
         </div>
-        <div class="status">
-          <span id="status-text" class="muted small">Initializing…</span>
-          <span id="error-text" class="error"></span>
+
+        <div class="topline-actions">
+          <span class="pill ghost">Static, zero-setup</span>
+          <span class="pill outline">Secure by design</span>
         </div>
       </header>
 
-      <div class="progress">
-        <div id="progress-bar"></div>
+      <div class="layout">
+        <aside class="side-panel">
+          <p class="eyebrow">Workday, but faster</p>
+          <h1>Application that respects your time.</h1>
+          <p class="lede">
+            Upload once, auto-save everywhere, edit without fear. This workspace runs fully in the browser
+            with real-time sync to the backend.
+          </p>
+
+          <div class="insights">
+            <div class="insight">
+              <p class="tiny-label">Live save</p>
+              <h3>Cloud + local</h3>
+              <p class="muted">
+                Instant autosave with offline draft resilience so you never lose progress.
+              </p>
+            </div>
+            <div class="insight">
+              <p class="tiny-label">Privacy-first</p>
+              <h3>Just your data</h3>
+              <p class="muted">
+                Nothing tracked beyond your answers. S3 uploads via signed URLs only.
+              </p>
+            </div>
+            <div class="insight">
+              <p class="tiny-label">Momentum</p>
+              <h3>4-step runway</h3>
+              <p class="muted">Clear milestones, minimal clicks, submit in minutes.</p>
+            </div>
+          </div>
+
+          <ol class="stepper" id="stepper">
+            <li class="stepper-item" data-step-marker="resume">
+              <div class="dot"></div>
+              <div>
+                <p class="tiny-label">Step 1</p>
+                <p class="stepper-title">Upload resume</p>
+                <p class="muted">PDF or DOCX with instant validation.</p>
+              </div>
+            </li>
+            <li class="stepper-item" data-step-marker="questions">
+              <div class="dot"></div>
+              <div>
+                <p class="tiny-label">Step 2</p>
+                <p class="stepper-title">Screening questions</p>
+                <p class="muted">Tell us the why and the wins.</p>
+              </div>
+            </li>
+            <li class="stepper-item" data-step-marker="eeo">
+              <div class="dot"></div>
+              <div>
+                <p class="tiny-label">Step 3</p>
+                <p class="stepper-title">EEO (optional)</p>
+                <p class="muted">Inclusive by default, optional by design.</p>
+              </div>
+            </li>
+            <li class="stepper-item" data-step-marker="review">
+              <div class="dot"></div>
+              <div>
+                <p class="tiny-label">Step 4</p>
+                <p class="stepper-title">Review and submit</p>
+                <p class="muted">Final glance before launch.</p>
+              </div>
+            </li>
+          </ol>
+        </aside>
+
+        <section class="panel">
+          <header class="panel-header">
+            <div>
+              <p class="eyebrow">In-progress application</p>
+              <p id="step-label" class="step-label">Loading...</p>
+            </div>
+            <div class="status-group">
+              <span id="status-text" class="pill live small">Initializing...</span>
+              <span id="error-text" class="pill error"></span>
+            </div>
+          </header>
+
+          <div class="progress">
+            <div id="progress-bar"></div>
+          </div>
+
+          <section id="step-resume" class="step">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Upload</p>
+                <h2>Upload your resume</h2>
+                <p class="muted small">PDF or DOCX. Upload is auto-saved.</p>
+              </div>
+              <span class="pill neutral">Drag and drop supported</span>
+            </div>
+
+            <label class="upload-tile" for="resume-input">
+              <div class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation">
+                  <path
+                    d="M12 3l5 5-1.4 1.4L13 7.8V18h-2V7.8L8.4 9.4 7 8z"
+                    fill="currentColor"
+                  />
+                  <path d="M5 18h14v2H5z" fill="currentColor" />
+                </svg>
+              </div>
+              <div>
+                <p class="upload-title">Drop file or browse</p>
+                <p class="muted small">We keep the original file without compression.</p>
+              </div>
+            </label>
+            <input id="resume-input" class="sr-only" type="file" accept=".pdf,.doc,.docx" />
+            <p id="resume-info" class="info"></p>
+          </section>
+
+          <section id="step-questions" class="step">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Context</p>
+                <h2>Screening questions</h2>
+                <p class="muted small">Be concise and punchy. We auto-save every keystroke.</p>
+              </div>
+              <span class="pill neutral">Two prompts</span>
+            </div>
+
+            <label class="field">
+              <span>Why are you interested in this role?</span>
+              <textarea id="q-motivation" rows="4" placeholder="Your story, your edge."></textarea>
+            </label>
+
+            <label class="field two-col">
+              <div>
+                <span>Years of experience in this field</span>
+                <input id="q-years" type="number" min="0" placeholder="4" />
+              </div>
+              <div class="helper-card">
+                <p class="tiny-label">Tip</p>
+                <p class="muted small">
+                  Stay specific: relevant industry experience beats inflated totals.
+                </p>
+              </div>
+            </label>
+          </section>
+
+          <section id="step-eeo" class="step">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Optional</p>
+                <h2>EEO information</h2>
+                <p class="muted small">
+                  Providing this information is voluntary. It will not affect your application.
+                </p>
+              </div>
+              <span class="pill neutral">Private by default</span>
+            </div>
+
+            <label class="field">
+              <span>Gender</span>
+              <select id="eeo-gender">
+                <option value="">Prefer not to say</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="nonbinary">Non-binary</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Veteran status</span>
+              <select id="eeo-veteran">
+                <option value="">Prefer not to say</option>
+                <option value="yes">I am a protected veteran</option>
+                <option value="no">I am not a protected veteran</option>
+              </select>
+            </label>
+          </section>
+
+          <section id="step-review" class="step">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Final check</p>
+                <h2>Review and submit</h2>
+                <p class="muted small">Verify your details. You can still jump back to edit.</p>
+              </div>
+              <span class="pill neutral">Zero surprises</span>
+            </div>
+
+            <div class="review-grid">
+              <div class="review-block">
+                <h3>Resume</h3>
+                <pre id="review-resume"></pre>
+              </div>
+
+              <div class="review-block">
+                <h3>Screening questions</h3>
+                <pre id="review-questions"></pre>
+              </div>
+
+              <div class="review-block">
+                <h3>EEO information</h3>
+                <pre id="review-eeo"></pre>
+              </div>
+            </div>
+          </section>
+
+          <footer class="app-footer">
+            <button id="back-btn" class="btn ghost">Back</button>
+            <div class="right-buttons">
+              <button id="next-btn" class="btn primary">Next</button>
+              <button id="submit-btn" class="btn success hidden">Submit application</button>
+            </div>
+          </footer>
+        </section>
       </div>
-
-      <section id="step-resume" class="step hidden">
-        <h2>Upload your resume</h2>
-        <p class="muted small">PDF or DOCX. Upload is auto-saved.</p>
-        <input id="resume-input" type="file" accept=".pdf,.doc,.docx" />
-        <p id="resume-info" class="info"></p>
-      </section>
-
-      <section id="step-questions" class="step hidden">
-        <h2>Screening questions</h2>
-
-        <label class="field">
-          <span>Why are you interested in this role?</span>
-          <textarea id="q-motivation" rows="4"></textarea>
-        </label>
-
-        <label class="field">
-          <span>Years of experience in this field</span>
-          <input id="q-years" type="number" min="0" />
-        </label>
-      </section>
-
-      <section id="step-eeo" class="step hidden">
-        <h2>EEO information (optional)</h2>
-        <p class="muted small">
-          Providing this information is voluntary. It won’t affect your application.
-        </p>
-
-        <label class="field">
-          <span>Gender</span>
-          <select id="eeo-gender">
-            <option value="">Prefer not to say</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="nonbinary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </label>
-
-        <label class="field">
-          <span>Veteran status</span>
-          <select id="eeo-veteran">
-            <option value="">Prefer not to say</option>
-            <option value="yes">I am a protected veteran</option>
-            <option value="no">I am not a protected veteran</option>
-          </select>
-        </label>
-      </section>
-
-      <section id="step-review" class="step hidden">
-        <h2>Review &amp; submit</h2>
-        <p class="muted small">
-          Check your info before submitting. You can still go back and edit.
-        </p>
-
-        <div class="review-block">
-          <h3>Resume</h3>
-          <pre id="review-resume"></pre>
-        </div>
-
-        <div class="review-block">
-          <h3>Screening questions</h3>
-          <pre id="review-questions"></pre>
-        </div>
-
-        <div class="review-block">
-          <h3>EEO information</h3>
-          <pre id="review-eeo"></pre>
-        </div>
-      </section>
-
-      <footer class="app-footer">
-        <button id="back-btn" class="btn secondary">Back</button>
-        <div class="right-buttons">
-          <button id="next-btn" class="btn primary">Next</button>
-          <button id="submit-btn" class="btn success hidden">Submit application</button>
-        </div>
-      </footer>
-    </main>
+    </div>
   </body>
 </html>

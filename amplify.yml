@@ -1,0 +1,14 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands: []
+    build:
+      commands:
+        - echo "Static site - no build step needed"
+  artifacts:
+    baseDirectory: webapp
+    files:
+      - '**/*'
+  cache:
+    paths: []

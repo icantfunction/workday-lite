@@ -8,8 +8,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@aws-amplify/cli": "^14.2.3"
-  }
+  "description": ""
 }

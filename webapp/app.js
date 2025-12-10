@@ -11,6 +11,7 @@ const stepLabelEl = document.getElementById('step-label');
 const statusTextEl = document.getElementById('status-text');
 const errorTextEl = document.getElementById('error-text');
 const progressBarEl = document.getElementById('progress-bar');
+const stepperItems = Array.from(document.querySelectorAll('[data-step-marker]'));
 
 const stepResumeEl = document.getElementById('step-resume');
 const stepQuestionsEl = document.getElementById('step-questions');
@@ -37,15 +38,13 @@ const submitBtn = document.getElementById('submit-btn');
 // Helpers
 function setStatus(text, saving) {
   statusTextEl.textContent = text;
-  if (saving) {
-    statusTextEl.classList.add('small');
-  } else {
-    statusTextEl.classList.remove('small');
-  }
+  statusTextEl.classList.toggle('saving', Boolean(saving));
+  statusTextEl.classList.toggle('small', Boolean(saving));
 }
 
 function setError(text) {
   errorTextEl.textContent = text || '';
+  errorTextEl.classList.toggle('hidden', !text);
 }
 
 function saveToLocal() {
@@ -60,7 +59,7 @@ function saveToLocal() {
 function scheduleSave() {
   if (!draft) return;
   saveToLocal();
-  setStatus('Saving…', true);
+  setStatus('Saving...', true);
   setError('');
 
   if (saveTimeout) {
@@ -85,16 +84,26 @@ function currentStep() {
 
 function updateStepLabel() {
   if (!draft) {
-    stepLabelEl.textContent = 'Loading…';
+    stepLabelEl.textContent = 'Loading...';
     return;
   }
   const stepNumber = currentStepIndex + 1;
-  stepLabelEl.textContent = `Step ${stepNumber} of ${steps.length} · Status: ${draft.status}`;
+  const status = draft.status || 'DRAFT';
+  stepLabelEl.textContent = `Step ${stepNumber}/${steps.length} | Status: ${status}`;
+}
+
+function updateStepper() {
+  if (!stepperItems.length) return;
+  stepperItems.forEach((item, idx) => {
+    item.classList.toggle('is-active', idx === currentStepIndex);
+    item.classList.toggle('is-complete', idx < currentStepIndex);
+  });
 }
 
 function updateProgressBar() {
   const percent = ((currentStepIndex + 1) / steps.length) * 100;
   progressBarEl.style.width = `${percent}%`;
+  updateStepper();
 }
 
 function updateButtons() {
@@ -118,9 +127,14 @@ function updateButtons() {
 
 function syncReview() {
   if (!draft) return;
-  reviewResumeEl.textContent = draft.resumeKey || 'Not uploaded';
-  reviewQuestionsEl.textContent = JSON.stringify(draft.answers || {}, null, 2);
-  reviewEeoEl.textContent = JSON.stringify(draft.eeo || {}, null, 2);
+  const answers = draft.answers || {};
+  const eeo = draft.eeo || {};
+
+  reviewResumeEl.textContent = draft.resumeKey || 'Not uploaded yet';
+  reviewQuestionsEl.textContent = `Motivation: ${answers.motivation || 'Not answered'}\nYears of experience: ${
+    answers.years_experience || 'Not provided'
+  }`;
+  reviewEeoEl.textContent = `Gender: ${eeo.gender || 'Not shared'}\nVeteran status: ${eeo.veteran || 'Not shared'}`;
 }
 
 function showCurrentStep() {
@@ -234,7 +248,7 @@ function hookEvents() {
     const file = e.target.files && e.target.files[0];
     if (!file || !draft) return;
 
-    resumeInfoEl.textContent = 'Uploading resume…';
+    resumeInfoEl.textContent = 'Uploading resume...';
     setError('');
 
     try {
@@ -294,7 +308,7 @@ function hookEvents() {
 
 // Init
 async function init() {
-  setStatus('Initializing…', false);
+  setStatus('Initializing...', false);
   setError('');
 
   // try local draft first
