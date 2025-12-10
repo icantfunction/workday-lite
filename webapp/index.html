@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Job Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="app-header">
+        <div>
+          <h1>Job Application</h1>
+          <p id="step-label" class="muted">Loading…</p>
+        </div>
+        <div class="status">
+          <span id="status-text" class="muted small">Initializing…</span>
+          <span id="error-text" class="error"></span>
+        </div>
+      </header>
+
+      <div class="progress">
+        <div id="progress-bar"></div>
+      </div>
+
+      <section id="step-resume" class="step hidden">
+        <h2>Upload your resume</h2>
+        <p class="muted small">PDF or DOCX. Upload is auto-saved.</p>
+        <input id="resume-input" type="file" accept=".pdf,.doc,.docx" />
+        <p id="resume-info" class="info"></p>
+      </section>
+
+      <section id="step-questions" class="step hidden">
+        <h2>Screening questions</h2>
+
+        <label class="field">
+          <span>Why are you interested in this role?</span>
+          <textarea id="q-motivation" rows="4"></textarea>
+        </label>
+
+        <label class="field">
+          <span>Years of experience in this field</span>
+          <input id="q-years" type="number" min="0" />
+        </label>
+      </section>
+
+      <section id="step-eeo" class="step hidden">
+        <h2>EEO information (optional)</h2>
+        <p class="muted small">
+          Providing this information is voluntary. It won’t affect your application.
+        </p>
+
+        <label class="field">
+          <span>Gender</span>
+          <select id="eeo-gender">
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Veteran status</span>
+          <select id="eeo-veteran">
+            <option value="">Prefer not to say</option>
+            <option value="yes">I am a protected veteran</option>
+            <option value="no">I am not a protected veteran</option>
+          </select>
+        </label>
+      </section>
+
+      <section id="step-review" class="step hidden">
+        <h2>Review &amp; submit</h2>
+        <p class="muted small">
+          Check your info before submitting. You can still go back and edit.
+        </p>
+
+        <div class="review-block">
+          <h3>Resume</h3>
+          <pre id="review-resume"></pre>
+        </div>
+
+        <div class="review-block">
+          <h3>Screening questions</h3>
+          <pre id="review-questions"></pre>
+        </div>
+
+        <div class="review-block">
+          <h3>EEO information</h3>
+          <pre id="review-eeo"></pre>
+        </div>
+      </section>
+
+      <footer class="app-footer">
+        <button id="back-btn" class="btn secondary">Back</button>
+        <div class="right-buttons">
+          <button id="next-btn" class="btn primary">Next</button>
+          <button id="submit-btn" class="btn success hidden">Submit application</button>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>
