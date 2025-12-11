@@ -16,6 +16,12 @@ function pk(id) {
 function sk() {
     return 'META';
 }
+function magicPk(token) {
+    return `MAGIC#${token}`;
+}
+function magicSk() {
+    return 'SESSION';
+}
 function response(statusCode, body) {
     return {
         statusCode,
@@ -47,6 +53,12 @@ const handler = async (event) => {
         }
         if (rawPath === '/upload-url' && method === 'POST') {
             return await handleUploadUrl(event);
+        }
+        if (rawPath === '/magic-link' && method === 'POST') {
+            return await handleRequestMagicLink(event);
+        }
+        if (rawPath === '/magic-link/validate' && method === 'POST') {
+            return await handleValidateMagicLink(event);
         }
         return response(404, { error: 'Not found' });
     }
@@ -138,5 +150,76 @@ async function handleUploadUrl(event) {
     return response(200, {
         uploadUrl: url,
         key
+    });
+}
+async function handleRequestMagicLink(event) {
+    if (!event.body) {
+        return response(400, { error: 'Missing body' });
+    }
+    const body = JSON.parse(event.body);
+    const email = body.email?.trim().toLowerCase();
+    if (!email) {
+        return response(400, { error: 'Email is required' });
+    }
+    const token = (0, crypto_1.randomUUID)();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 1000 * 60 * 30); // 30 minutes
+    const record = {
+        token,
+        email,
+        createdAt: now.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+        ttl: Math.floor(expiresAt.getTime() / 1000)
+    };
+    await ddb.send(new client_dynamodb_1.PutItemCommand({
+        TableName: TABLE_NAME,
+        Item: (0, util_dynamodb_1.marshall)({
+            pk: magicPk(token),
+            sk: magicSk(),
+            ...record
+        })
+    }));
+    const origin = event.headers?.origin || event.headers?.Origin;
+    const loginUrl = origin ? `${origin.replace(/\/$/, '')}/?token=${token}` : undefined;
+    return response(200, {
+        ok: true,
+        loginUrl,
+        token
+    });
+}
+function readBearerToken(event) {
+    const header = event.headers?.authorization || event.headers?.Authorization;
+    if (!header)
+        return null;
+    const parts = header.split(' ');
+    if (parts.length === 2 && /^Bearer$/i.test(parts[0])) {
+        return parts[1];
+    }
+    return header;
+}
+async function handleValidateMagicLink(event) {
+    const token = readBearerToken(event);
+    if (!token) {
+        return response(401, { error: 'Missing token' });
+    }
+    const res = await ddb.send(new client_dynamodb_1.GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: (0, util_dynamodb_1.marshall)({
+            pk: magicPk(token),
+            sk: magicSk()
+        })
+    }));
+    if (!res.Item) {
+        return response(401, { error: 'Invalid or expired link' });
+    }
+    const record = (0, util_dynamodb_1.unmarshall)(res.Item);
+    const expiresAt = new Date(record.expiresAt).getTime();
+    if (Number.isFinite(expiresAt) && expiresAt < Date.now()) {
+        return response(401, { error: 'Link expired' });
+    }
+    return response(200, {
+        ok: true,
+        email: record.email,
+        expiresAt: record.expiresAt
     });
 }

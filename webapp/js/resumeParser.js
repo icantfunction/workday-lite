@@ -60,7 +60,33 @@ export function mapResumeToAnswers(text) {
     text.match(/(\d{1,2})\+?\s*(?:yrs|years)/i);
   const years = yearsMatch ? yearsMatch[1] : '';
 
-  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const lower = text.toLowerCase();
+  const summaryKeywords = ['summary', 'objective', 'profile'];
+  const stopKeywords =
+    /(experience|employment|work history|education|skills|projects|certifications|contact)\b/i;
+
+  let summaryText = '';
+  for (const keyword of summaryKeywords) {
+    const idx = lower.indexOf(keyword);
+    if (idx !== -1) {
+      const after = text.slice(idx + keyword.length);
+      const stopAt = after.search(stopKeywords);
+      summaryText = stopAt !== -1 ? after.slice(0, stopAt) : after;
+      break;
+    }
+  }
+
+  const sentences = (summaryText || text)
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(
+      (s) =>
+        s &&
+        !/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/.test(s) &&
+        !/\b(?:phone|tel|github|linkedin|portfolio)\b/i.test(s) &&
+        !/\d{3}[\s().-]*\d{3}[\s().-]*\d{4}/.test(s)
+    );
+
   const summary = sentences.slice(0, 2).join(' ');
   const motivation = summary ? summary.slice(0, MAX_TEXT_SLICE) : '';
 

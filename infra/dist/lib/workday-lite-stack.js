@@ -107,6 +107,16 @@ class WorkdayLiteStack extends cdk.Stack {
             methods: [aws_apigatewayv2_1.HttpMethod.POST],
             integration
         });
+        httpApi.addRoutes({
+            path: '/magic-link',
+            methods: [aws_apigatewayv2_1.HttpMethod.POST],
+            integration
+        });
+        httpApi.addRoutes({
+            path: '/magic-link/validate',
+            methods: [aws_apigatewayv2_1.HttpMethod.POST],
+            integration
+        });
         // Public static site bucket for SPA frontend
         const staticSiteBucket = new aws_s3_1.Bucket(this, 'JobPortalStaticSiteBucket', {
             websiteIndexDocument: 'index.html',

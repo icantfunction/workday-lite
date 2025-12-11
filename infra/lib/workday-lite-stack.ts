@@ -98,6 +98,16 @@ export class WorkdayLiteStack extends cdk.Stack {
       methods: [HttpMethod.POST],
       integration
     });
+    httpApi.addRoutes({
+      path: '/magic-link',
+      methods: [HttpMethod.POST],
+      integration
+    });
+    httpApi.addRoutes({
+      path: '/magic-link/validate',
+      methods: [HttpMethod.POST],
+      integration
+    });
 
     // Public static site bucket for SPA frontend
     const staticSiteBucket = new Bucket(this, 'JobPortalStaticSiteBucket', {

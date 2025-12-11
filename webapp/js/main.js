@@ -58,7 +58,9 @@ const dom = {
   resumeRetryBtn: document.getElementById('resume-retry-btn'),
   magicForm: document.getElementById('magic-form'),
   magicEmail: document.getElementById('magic-email'),
-  magicStatus: document.getElementById('magic-status')
+  magicStatus: document.getElementById('magic-status'),
+  magicSendBtn: document.getElementById('magic-send-btn'),
+  editButtons: Array.from(document.querySelectorAll('[data-edit-step]'))
 };
 
 function currentStep() {
@@ -74,6 +76,13 @@ function setStatus(text, saving) {
 function setError(text) {
   dom.errorText.textContent = text || '';
   dom.errorText.classList.toggle('hidden', !text);
+}
+
+function formatFileName(path) {
+  if (!path) return '';
+  const normalized = path.replace(/\\/g, '/');
+  const parts = normalized.split('/').filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : path;
 }
 
 function setMagicStatus(text, variant = 'neutral') {
@@ -120,7 +129,7 @@ function updatePendingResumeUI() {
   const pending = Boolean(draft && draft.pendingResumeName && !draft.resumeKey);
   dom.pendingResume.classList.toggle('visible', pending);
   if (pending && dom.pendingResumeName) {
-    dom.pendingResumeName.textContent = draft.pendingResumeName;
+    dom.pendingResumeName.textContent = formatFileName(draft.pendingResumeName);
   }
 }
 
@@ -244,8 +253,13 @@ function syncReview() {
   const answers = draft.answers || {};
   const eeo = draft.eeo || {};
 
+  const displayResume =
+    formatFileName(draft.resumeKey) ||
+    formatFileName(draft.pendingResumeName) ||
+    'Resume pending upload (required for submit)';
+
   dom.reviewResume.textContent =
-    draft.resumeKey || draft.pendingResumeName || 'Resume pending upload (required for submit)';
+    displayResume;
   dom.reviewQuestions.textContent = `Motivation: ${answers.motivation || 'Not answered'}\nYears of experience: ${
     answers.years_experience || 'Not provided'
   }`;
@@ -276,9 +290,9 @@ function hydrateFormFromDraft() {
   if (!draft) return;
 
   if (draft.resumeKey) {
-    dom.resumeInfo.textContent = 'Resume uploaded.';
+    dom.resumeInfo.textContent = `Resume uploaded: ${formatFileName(draft.resumeKey)}`;
   } else if (draft.pendingResumeName) {
-    dom.resumeInfo.textContent = `${draft.pendingResumeName} ready to upload when online.`;
+    dom.resumeInfo.textContent = `${formatFileName(draft.pendingResumeName)} ready to upload when online.`;
   }
 
   if (draft.answers) {
@@ -442,18 +456,14 @@ function hookEvents() {
   dom.magicForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = (dom.magicEmail?.value || '').trim();
-    if (!email) {
-      setMagicStatus('Enter an email', 'error');
-      return;
-    }
-    setMagicStatus('Sending link...', 'neutral');
-    try {
-      await requestMagicLink(email);
-      setMagicStatus('Link sent. Check your email.', 'success');
-    } catch (err) {
-      console.warn('Magic link request failed', err);
-      setMagicStatus('Could not send link. Try again.', 'error');
-    }
+    await sendMagicLink(email);
+  });
+
+  dom.editButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const step = btn.getAttribute('data-edit-step');
+      goToStep(step);
+    });
   });
 }
 
@@ -485,6 +495,55 @@ function initToken() {
     setAuthToken(token);
     storeSessionToken(token);
     setMagicStatus('Magic link active', 'success');
+  }
+}
+
+function goToStep(stepName) {
+  const idx = steps.indexOf(stepName);
+  if (idx === -1) return;
+  currentStepIndex = idx;
+  showCurrentStep();
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sendMagicLink(email) {
+  if (!email) {
+    setMagicStatus('Enter an email', 'error');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    setMagicStatus('Enter a valid email', 'error');
+    return;
+  }
+
+  const btn = dom.magicSendBtn;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+  }
+  setMagicStatus('Sending link...', 'neutral');
+
+  try {
+    await requestMagicLink(email);
+    setMagicStatus('Link sent. Check your email.', 'success');
+    if (btn) {
+      btn.textContent = 'Sent!';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Send link';
+      }, 30000);
+    }
+  } catch (err) {
+    console.warn('Magic link request failed', err);
+    setMagicStatus('Could not send link. Try again.', 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Send link';
+    }
   }
 }
 

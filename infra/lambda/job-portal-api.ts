@@ -23,12 +23,28 @@ interface ApplicationDraft {
   updatedAt: string;
 }
 
+interface MagicLinkRecord {
+  token: string;
+  email: string;
+  createdAt: string;
+  expiresAt: string;
+  ttl: number;
+}
+
 function pk(id: string) {
   return `APP#${id}`;
 }
 
 function sk() {
   return 'META';
+}
+
+function magicPk(token: string) {
+  return `MAGIC#${token}`;
+}
+
+function magicSk() {
+  return 'SESSION';
 }
 
 function response(statusCode: number, body: any): APIGatewayProxyResultV2 {
@@ -69,6 +85,14 @@ export const handler = async (
 
     if (rawPath === '/upload-url' && method === 'POST') {
       return await handleUploadUrl(event);
+    }
+
+    if (rawPath === '/magic-link' && method === 'POST') {
+      return await handleRequestMagicLink(event);
+    }
+
+    if (rawPath === '/magic-link/validate' && method === 'POST') {
+      return await handleValidateMagicLink(event);
     }
 
     return response(404, { error: 'Not found' });
@@ -188,5 +212,93 @@ async function handleUploadUrl(event: APIGatewayProxyEventV2) {
   return response(200, {
     uploadUrl: url,
     key
+  });
+}
+
+async function handleRequestMagicLink(event: APIGatewayProxyEventV2) {
+  if (!event.body) {
+    return response(400, { error: 'Missing body' });
+  }
+
+  const body = JSON.parse(event.body) as { email?: string };
+  const email = body.email?.trim().toLowerCase();
+
+  if (!email) {
+    return response(400, { error: 'Email is required' });
+  }
+
+  const token = randomUUID();
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 1000 * 60 * 30); // 30 minutes
+
+  const record: MagicLinkRecord = {
+    token,
+    email,
+    createdAt: now.toISOString(),
+    expiresAt: expiresAt.toISOString(),
+    ttl: Math.floor(expiresAt.getTime() / 1000)
+  };
+
+  await ddb.send(
+    new PutItemCommand({
+      TableName: TABLE_NAME,
+      Item: marshall({
+        pk: magicPk(token),
+        sk: magicSk(),
+        ...record
+      })
+    })
+  );
+
+  const origin = event.headers?.origin || event.headers?.Origin;
+  const loginUrl = origin ? `${origin.replace(/\/$/, '')}/?token=${token}` : undefined;
+
+  return response(200, {
+    ok: true,
+    loginUrl,
+    token
+  });
+}
+
+function readBearerToken(event: APIGatewayProxyEventV2) {
+  const header = event.headers?.authorization || event.headers?.Authorization;
+  if (!header) return null;
+  const parts = header.split(' ');
+  if (parts.length === 2 && /^Bearer$/i.test(parts[0])) {
+    return parts[1];
+  }
+  return header;
+}
+
+async function handleValidateMagicLink(event: APIGatewayProxyEventV2) {
+  const token = readBearerToken(event);
+  if (!token) {
+    return response(401, { error: 'Missing token' });
+  }
+
+  const res = await ddb.send(
+    new GetItemCommand({
+      TableName: TABLE_NAME,
+      Key: marshall({
+        pk: magicPk(token),
+        sk: magicSk()
+      })
+    })
+  );
+
+  if (!res.Item) {
+    return response(401, { error: 'Invalid or expired link' });
+  }
+
+  const record = unmarshall(res.Item) as MagicLinkRecord;
+  const expiresAt = new Date(record.expiresAt).getTime();
+  if (Number.isFinite(expiresAt) && expiresAt < Date.now()) {
+    return response(401, { error: 'Link expired' });
+  }
+
+  return response(200, {
+    ok: true,
+    email: record.email,
+    expiresAt: record.expiresAt
   });
 }

@@ -487,6 +487,13 @@ select:focus {
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
 }
 
+.review-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .review-block h3 {
   margin: 0 0 6px;
 }
@@ -498,6 +505,29 @@ select:focus {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
   color: var(--muted);
+}
+
+.icon-btn {
+  border: 1px solid var(--border-strong);
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 6px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(43, 110, 246, 0.5);
+  box-shadow: 0 8px 18px rgba(43, 110, 246, 0.12);
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
 }
 
 .app-footer {

@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Daylight Candidate Studio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -120,7 +121,7 @@
             <div class="status-group">
               <form id="magic-form" class="magic-form">
                 <input id="magic-email" type="email" placeholder="Email for magic link" aria-label="Email" />
-                <button class="btn ghost tiny" type="submit">Send link</button>
+                <button id="magic-send-btn" class="btn ghost tiny" type="submit">Send link</button>
                 <span id="magic-status" class="pill neutral small hidden"></span>
               </form>
               <div class="status-badges">
@@ -257,17 +258,47 @@
 
             <div class="review-grid">
               <div class="review-block">
-                <h3>Resume</h3>
+                <div class="review-block-header">
+                  <h3>Resume</h3>
+                  <button class="icon-btn" type="button" data-edit-step="resume" aria-label="Edit resume">
+                    <svg viewBox="0 0 24 24" role="presentation">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92-0.33l7.78-7.78 0.71 0.71-7.78 7.78H5.92v-0.71zM20.71 7.04c0.39-0.39 0.39-1.02 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <pre id="review-resume"></pre>
               </div>
 
               <div class="review-block">
-                <h3>Screening questions</h3>
+                <div class="review-block-header">
+                  <h3>Screening questions</h3>
+                  <button class="icon-btn" type="button" data-edit-step="questions" aria-label="Edit screening questions">
+                    <svg viewBox="0 0 24 24" role="presentation">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92-0.33l7.78-7.78 0.71 0.71-7.78 7.78H5.92v-0.71zM20.71 7.04c0.39-0.39 0.39-1.02 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <pre id="review-questions"></pre>
               </div>
 
               <div class="review-block">
-                <h3>EEO information</h3>
+                <div class="review-block-header">
+                  <h3>EEO information</h3>
+                  <button class="icon-btn" type="button" data-edit-step="eeo" aria-label="Edit EEO information">
+                    <svg viewBox="0 0 24 24" role="presentation">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92-0.33l7.78-7.78 0.71 0.71-7.78 7.78H5.92v-0.71zM20.71 7.04c0.39-0.39 0.39-1.02 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </div>
                 <pre id="review-eeo"></pre>
               </div>
             </div>
