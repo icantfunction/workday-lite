@@ -5,10 +5,10 @@ Single-page candidate application flow with autosave, offline-friendly drafts, m
 ## Architecture (Mermaid)
 ```mermaid
 graph LR
-  A[Browser SPA] -->|HTTPS| B[API Gateway (HTTP API)]
+  A[Browser SPA] -->|HTTPS| B["API Gateway (HTTP API)"]
   B -->|Lambda proxy| C[Job Portal Lambda]
-  C --> D[DynamoDB (applications + magic links)]
-  C --> E[S3 Resumes Bucket (presigned uploads)]
+  C --> D["DynamoDB (applications + magic links)"]
+  C --> E["S3 Resumes Bucket (presigned uploads)"]
   A -->|PUT/POST presigned| E
   F[Static Site S3] -->|public website| A
 ```
